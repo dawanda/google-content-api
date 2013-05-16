@@ -20,7 +20,7 @@ module GoogleContentApi
       end
     end
 
-    def created_sub_account(title, adult_content = false, attributes = {})
+    def create_sub_account(title, adult_content = false, attributes = {})
       token            = fetch_token
       sub_accounts_url = GoogleContentApi.urls["managed_accounts"]
       xml              = create_sub_account_xml(title, adult_content, attributes)
@@ -35,7 +35,7 @@ module GoogleContentApi
       if response.status == 201
         response.body
       else
-        raise "Unable to create sub account - received status #{response.status}"
+        raise "Unable to create sub account - received status #{response.status}. body: #{response.body}"
       end
     end
 
@@ -63,15 +63,17 @@ module GoogleContentApi
 
       def create_sub_account_xml(title, adult_content = false, attributes = {})
         adult_content = !adult_content ? "no" : "yes"
-        xml = %Q|<entry xmlns='http://www.w3.org/2005/Atom' xmlns:sc='http://schemas.google.com/structuredcontent/2009'>
-                  <title>#{title}</title>
-                  <sc:adult_content>#{adult_content}</sc:adult_content>|
-        xml << "<content>#{attributes[:description]}</content>"                if attributes[:description]
-        xml << "<link>#{attributes[:link]}</link>"                             if attributes[:link]
-        xml << "<sc:internal_id>#{attributes[:internal_id]}</sc:internal_id>"  if attributes[:internal_id]
-        xml << "<sc:reviews_url>#{attributes[:reviews_url]}</sc:reviews_url>"  if attributes[:reviews_url]
-        xml << "<sc:adwords_accounts>#{attributes[:adwords_accounts]}</sc:adwords_accounts>" if attributes[:adwords_accounts]
-        xml << "</entry>"
+        builder = Nokogiri::XML::Builder.new do |xml|
+          xml.entry('xmlns' => 'http://www.w3.org/2005/Atom', 'xmlns:sc' => 'http://schemas.google.com/structuredcontent/2009') do
+            xml.title_ title
+            xml['sc'].adult_content adult_content
+            xml.content_ attributes[:description]                     if attributes[:description]
+            xml.link_(:rel => 'alternate', :type => 'text/html', :href => attributes[:link]) if attributes[:link]
+            xml['sc'].internal_id_ attributes[:internal_id]           if attributes[:internal_id]
+            xml['sc'].reviews_url_ attributes[:reviews_url]           if attributes[:reviews_url]
+            xml['sc'].adwords_accounts_ attributes[:adwords_accounts] if attributes[:adwords_accounts]
+          end
+        end.to_xml
       end
 
     end
