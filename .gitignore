@@ -15,4 +15,4 @@ spec/reports
 test/tmp
 test/version_tmp
 tmp
-config/config.yml
+config/google_content_api.yml
