@@ -1,0 +1,10 @@
+client_id: "....apps.googleusercontent.com"
+content_api_scope: "https://www.googleapis.com/auth/structuredcontent"
+client_secret: "..."
+refresh_token: "<refresh token for continuous interactions>"
+redirect_uri: "https://example.com/oauth2callback"
+user_id: "<your user id>"
+application_name: "<your app name>" # Not required
+application_version: "0.0.0" # Not required
+feed_urls:
+  managed_accounts: "https://content.googleapis.com/content/v1/#{USER_ID}/managedaccounts"
