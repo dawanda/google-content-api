@@ -6,10 +6,10 @@ require 'google_content_api/version'
 Gem::Specification.new do |spec|
   spec.name          = "google_content_api"
   spec.version       = GoogleContentApi::VERSION
-  spec.authors       = ["Amir Friedman"]
+  spec.authors       = ["DaWanda GmbH"]
   spec.email         = ["amir@dawanda.com"]
-  spec.description   = %q{Gem for interacting with Google's Shopping API.}
-  spec.summary       = %q{Gem for interacting with Google's Shopping API.}
+  spec.description   = %q{Gem for interacting with Google's Content API.}
+  spec.summary       = %q{Gem for interacting with Google's Content API.}
   spec.homepage      = ""
   spec.license       = "MIT"
 
