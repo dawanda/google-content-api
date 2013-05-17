@@ -33,7 +33,7 @@ module GoogleContentApi
       response = Faraday.post sub_accounts_url, xml
 
       if response.status == 201
-        response.body
+        response
       else
         raise "Unable to create sub account - received status #{response.status}. body: #{response.body}"
       end
