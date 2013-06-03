@@ -1,4 +1,5 @@
 require 'yaml'
+require 'nokogiri'
 require 'google/api_client'
 
 require 'google_content_api/version'

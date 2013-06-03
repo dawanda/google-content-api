@@ -14,7 +14,7 @@ module GoogleContentApi
       response = Faraday.get sub_accounts_url
 
       if response.status == 200
-        response.body
+        response
       else
         raise "request unsuccessful - received status #{response.status}"
       end
