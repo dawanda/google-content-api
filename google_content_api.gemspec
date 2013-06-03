@@ -21,6 +21,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec", "~> 2.13"
+  spec.add_development_dependency "webmock", "~> 1.11.0"
   spec.add_dependency  "google-api-client", "~> 0.4"
   spec.add_dependency  "nokogiri", "~> 1.5"
 
