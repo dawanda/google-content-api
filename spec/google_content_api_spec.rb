@@ -2,7 +2,7 @@ require 'webmock/rspec'
 require 'lib/google_content_api'
 
 describe GoogleContentApi do
-
+  let(:user_id) { GoogleContentApi.config["user_id"] }
   it { should respond_to(:config) }
   it { should respond_to(:urls) }
 
@@ -25,13 +25,18 @@ describe GoogleContentApi do
     let(:sub_account_name) { "test account" }
     let(:fake_token) { "123123" }
 
+    it { should respond_to(:create_products) }
+    it { should respond_to(:create_sub_account) }
+
+
+
     describe ".create_sub_account" do
       it "creates a sub account" do
         subject.should_receive(:create_sub_account_xml).
           once.with(sub_account_name, false, {}).and_return(example_create_xml)
         subject.should_receive(:fetch_token).once.and_return(fake_token)
 
-        stub_request(:post, GoogleContentApi.urls["managed_accounts"]).
+        stub_request(:post, GoogleContentApi.urls("managed_accounts", user_id)).
           with(
             :body => example_create_xml,
             :headers => {
@@ -52,7 +57,7 @@ describe GoogleContentApi do
       it "status == 200" do
         subject.should_receive(:fetch_token).once.and_return(fake_token)
 
-        stub_request(:get, GoogleContentApi.urls["managed_accounts"]).
+        stub_request(:get, GoogleContentApi.urls("managed_accounts", user_id)).
           with(:headers => {
             'Accept'=>'*/*',
             'Authorization' => "AuthSub token=#{fake_token}",
