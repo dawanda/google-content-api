@@ -39,6 +39,19 @@ module GoogleContentApi
         end
       end
 
+      def delete_sub_account(id)
+        token            = fetch_token
+        sub_account_url = GoogleContentApi.urls("managed_accounts", user_id) + "/#{id}"
+        Faraday.headers  = { "Authorization"  => "AuthSub token=#{token}" }
+        response = Faraday.delete sub_account_url
+
+        if response.status == 200
+          response
+        else
+          raise "Unable to create sub account - received status #{response.status}. body: #{response.body}"
+        end
+      end
+
       def create_products(sub_account_id, products)
         token            = fetch_token
         products_url     = GoogleContentApi.urls("products", sub_account_id)
