@@ -46,8 +46,8 @@ describe GoogleContentApi do
                 :status => 201,
                 :body => "<entry xmlns='...'>stuff</entry>")
 
-        GoogleContentApi::Client.create_sub_account(sub_account_name, false).
-          status.should == 201
+        response = subject.create_sub_account(sub_account_name, false)
+        response.status.should == 201
       end
     end
 
