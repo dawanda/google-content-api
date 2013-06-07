@@ -2,7 +2,6 @@ module GoogleContentApi
 
   class Client
     class << self
-
       def get_all_sub_accounts
         token            = fetch_token
         sub_accounts_url = GoogleContentApi.urls("managed_accounts", user_id)
@@ -108,7 +107,7 @@ module GoogleContentApi
                   xml['batch'].operation_(:type => 'INSERT')
                   xml['sc'].id_ attributes[:id]
                   xml.title_ attributes[:title]
-                  xml.content_ attributes[:description], :type => 'text'  # warn if less than 500 chars?
+                  xml.content_ attributes[:description], :type => 'text'
                   xml.link_(:rel => 'alternate', :type => 'text/html', :href => attributes[:link])
                   xml['sc'].image_link_ attributes[:image]
                   xml['sc'].content_language_ attributes[:content_language]
@@ -119,6 +118,7 @@ module GoogleContentApi
                   xml['scp'].condition_ (attributes[:condition] != 9 ? "new" : "used")
                   xml['scp'].price_ attributes[:price], :unit => attributes[:currency]
 
+                  # optional values
                   if attributes[:additional_images]
                     attributes[:additional_images].each { |image_link| xml['sc'].additional_image_link_ }
                   end
