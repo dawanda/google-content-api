@@ -3,7 +3,9 @@ require 'nokogiri'
 require 'google/api_client'
 
 require 'google_content_api/version'
-require 'google_content_api/client'
+require 'google_content_api/authorization'
+require 'google_content_api/sub_account'
+require 'google_content_api/product'
 
 module GoogleContentApi
   def self.config(options = {})
