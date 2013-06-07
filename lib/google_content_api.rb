@@ -10,14 +10,16 @@ module GoogleContentApi
     @@config ||= YAML.load( File.read(options[:config_file] || "config/google_content_api.yml") )
   end
 
-  def self.urls(type, account_id)
-    case type
-    when "managed_accounts"
-      "https://content.googleapis.com/content/v1/#{account_id}/managedaccounts"
-    when "products"
-      "https://content.googleapis.com/content/v1/#{account_id}/items/products/schema/batch?warnings"
-    else
-      raise "unknown zone"
-    end
+  def self.urls(type, account_id, dry_run = false)
+    url = case type
+      when "managed_accounts"
+        "https://content.googleapis.com/content/v1/#{account_id}/managedaccounts"
+      when "products"
+        "https://content.googleapis.com/content/v1/#{account_id}/items/products/schema/batch?warnings"
+      else
+        raise "unknown zone"
+      end
+
+    dry_run ? url + "&dry-run" : url
   end
 end

@@ -51,9 +51,9 @@ module GoogleContentApi
         end
       end
 
-      def create_products(sub_account_id, products)
+      def create_products(sub_account_id, products, dry_run = false)
         token            = fetch_token
-        products_url     = GoogleContentApi.urls("products", sub_account_id)
+        products_url     = GoogleContentApi.urls("products", sub_account_id, dry_run)
         xml              = create_product_items_batch_xml(products)
         Faraday.headers  = {
           "Content-Type"   => "application/atom+xml",
