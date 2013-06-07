@@ -115,7 +115,7 @@ module GoogleContentApi
                   xml['sc'].expiration_date_  attributes[:expiration_date] if attributes[:expiration_date]
                   xml['sc'].adult_ attributes[:adult] if attributes[:adult]
                   xml['scp'].availability_ "in stock"
-                  xml['scp'].condition_ (attributes[:condition] != 9 ? "new" : "used")
+                  xml['scp'].condition_(attributes[:condition] != 9 ? "new" : "used")
                   xml['scp'].price_ attributes[:price], :unit => attributes[:currency]
 
                   # optional values
