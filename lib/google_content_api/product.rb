@@ -42,7 +42,7 @@ module GoogleContentApi
                   xml['sc'].target_country_   attributes[:target_country]
                   xml['sc'].expiration_date_  attributes[:expiration_date] if attributes[:expiration_date]
                   xml['sc'].adult_ attributes[:adult] if attributes[:adult]
-                  xml['scp'].availability_ "in stock"
+                  xml['scp'].availability_ attributes[:availability]
                   xml['scp'].condition_(attributes[:condition] != 9 ? "new" : "used")
                   xml['scp'].price_ attributes[:price], :unit => attributes[:currency]
 
@@ -62,7 +62,15 @@ module GoogleContentApi
                   if attributes[:mpn]
                     xml['scp'].mpn_ attributes[:mpn]
                   end
-
+                  if attributes[:adwords_grouping]
+                    xml['scp'].adwords_grouping_ attributes[:adwords_grouping]
+                  end
+                  if attributes[:adwords_labels]
+                    xml['scp'].adwords_labels_ attributes[:adwords_labels]
+                  end
+                  if attributes[:adwords_redirect]
+                    xml['scp'].adwords_redirect_ attributes[:adwords_redirect]
+                  end
                 end
               end
             end
