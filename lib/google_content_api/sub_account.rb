@@ -41,9 +41,9 @@ module GoogleContentApi
 
       def delete(id)
         token            = fetch_token
-        sub_account_url = GoogleContentApi.urls("managed_accounts", google_user_id) + "/#{id}"
+        sub_account_url  = GoogleContentApi.urls("managed_accounts", google_user_id) + "/#{id}"
         Faraday.headers  = { "Authorization"  => "AuthSub token=#{token}" }
-        response = Faraday.delete sub_account_url
+        response         = Faraday.delete sub_account_url
 
         if response.status == 200
           response
