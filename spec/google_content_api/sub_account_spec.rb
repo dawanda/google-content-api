@@ -5,12 +5,13 @@ describe GoogleContentApi::SubAccount do
     let(:sub_account_name) { "test account" }
     let(:fake_token) { "123123" }
 
-    it { should respond_to(:create_sub_account) }
-    it { should respond_to(:get_all_sub_accounts) }
+    it { should respond_to(:create) }
+    it { should respond_to(:get_all) }
+    it { should respond_to(:delete) }
 
-    describe ".create_sub_account" do
+    describe ".create" do
       it "creates a sub account" do
-        subject.should_receive(:create_sub_account_xml).
+        subject.should_receive(:create_xml).
           once.with(sub_account_name, false, {}).and_return(example_create_xml)
         subject.should_receive(:fetch_token).once.and_return(fake_token)
 
@@ -26,12 +27,12 @@ describe GoogleContentApi::SubAccount do
                 :status => 201,
                 :body => "<entry xmlns='...'>stuff</entry>")
 
-        response = subject.create_sub_account(sub_account_name, false)
+        response = subject.create(sub_account_name, false)
         response.status.should == 201
       end
     end
 
-    describe ".get_all_sub_accounts" do
+    describe ".get_all" do
       before(:each) do
         GoogleContentApi::Authorization.should_receive(:fetch_token).once.and_return(fake_token)
       end
@@ -48,7 +49,7 @@ describe GoogleContentApi::SubAccount do
               :status => 200,
               :body => "<entry xmlns='...'>blah blah</entry>")
 
-          response = subject.get_all_sub_accounts
+          response = subject.get_all
           response.status.should == 200
         end
       end
@@ -64,7 +65,7 @@ describe GoogleContentApi::SubAccount do
               :status => 400,
               :body => "<entry xmlns='...'>blah blah</entry>")
 
-          expect { subject.get_all_sub_accounts }.to raise_error
+          expect { subject.get_all }.to raise_error
         end
       end
     end
@@ -80,7 +81,7 @@ describe GoogleContentApi::SubAccount do
             with(delete_url).
             and_return( double("response", :status => 200) )
 
-          response = subject.delete_sub_account sub_account_id
+          response = subject.delete sub_account_id
           response.status.should == 200
         end
       end
@@ -97,7 +98,7 @@ describe GoogleContentApi::SubAccount do
               :status => 404,
               :body => example_delete_error_xml) )
 
-          expect { subject.delete_sub_account(sub_account_id) }.to raise_error
+          expect { subject.delete(sub_account_id) }.to raise_error
         end
       end
     end

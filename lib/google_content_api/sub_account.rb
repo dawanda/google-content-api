@@ -3,7 +3,7 @@ module GoogleContentApi
   class SubAccount
     class << self
 
-      def get_all_sub_accounts
+      def get_all
         token            = Authorization.fetch_token
         sub_accounts_url = GoogleContentApi.urls("managed_accounts", google_user_id)
         Faraday.headers  = {
@@ -20,10 +20,10 @@ module GoogleContentApi
         end
       end
 
-      def create_sub_account(title, adult_content = false, attributes = {})
+      def create(title, adult_content = false, attributes = {})
         token            = fetch_token
         sub_accounts_url = GoogleContentApi.urls("managed_accounts", google_user_id)
-        xml              = create_sub_account_xml(title, adult_content, attributes)
+        xml              = create_xml(title, adult_content, attributes)
         Faraday.headers  = {
           "Content-Type"   => "application/atom+xml",
           "Content-Length" => xml.length.to_s,
@@ -39,7 +39,7 @@ module GoogleContentApi
         end
       end
 
-      def delete_sub_account(id)
+      def delete(id)
         token            = fetch_token
         sub_account_url = GoogleContentApi.urls("managed_accounts", google_user_id) + "/#{id}"
         Faraday.headers  = { "Authorization"  => "AuthSub token=#{token}" }
@@ -53,7 +53,7 @@ module GoogleContentApi
       end
 
       private
-        def create_sub_account_xml(title, adult_content = false, attributes = {})
+        def create_xml(title, adult_content = false, attributes = {})
           adult_content = !adult_content ? "no" : "yes"
           builder = Nokogiri::XML::Builder.new do |xml|
             xml.entry('xmlns' => 'http://www.w3.org/2005/Atom', 'xmlns:sc' => 'http://schemas.google.com/structuredcontent/2009') do
