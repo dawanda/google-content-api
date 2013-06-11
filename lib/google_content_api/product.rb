@@ -82,7 +82,7 @@ module GoogleContentApi
           if attributes[:shipping]
             xml['scp'].shipping_ do
               xml['scp'].shipping_country_ attributes[:shipping_country]
-              xml['scp'].shipping_price_ attributes[:shipping_country]
+              xml['scp'].shipping_price_ attributes[:shipping_price]
               xml['scp'].shipping_service_ attributes[:shipping_service]
             end
           end
@@ -95,7 +95,6 @@ module GoogleContentApi
           if attributes[:age_group]
             xml['scp'].age_group_ attributes[:age_group]
           end
-
         end
     end
   end
