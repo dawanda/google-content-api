@@ -73,9 +73,9 @@ module GoogleContentApi
                  end
                  if attributes[:shipping]
                    xml['scp'].shipping_ do
-                     xml['scp'].shipping_country_ attributes[:shipping_country]
-                     xml['scp'].shipping_price_ attributes[:shipping_price]
-                     xml['scp'].shipping_service_ attributes[:shipping_service]
+                     xml['scp'].shipping_country_ attributes[:shipping][:shipping_country]
+                     xml['scp'].shipping_price_ attributes[:shipping][:shipping_price]
+                     xml['scp'].shipping_service_ attributes[:shipping][:shipping_service]
                    end
                  end
                  if attributes[:size]
