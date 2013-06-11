@@ -3,7 +3,6 @@ describe GoogleContentApi::SubAccount do
     let(:user_id) { GoogleContentApi.config["user_id"] }
     let(:example_create_xml) { %Q|<?xml version=\"1.0\"?>\n<entry xmlns:sc=\"http://schemas.google.com/structuredcontent/2009\" xmlns=\"http://www.w3.org/2005/Atom\">\n  <title>#{sub_account_name}</title>\n  <sc:adult_content>no</sc:adult_content>\n</entry>\n| }
     let(:sub_account_name) { "test account" }
-    let(:fake_token) { "123123" }
 
     it { should respond_to(:create) }
     it { should respond_to(:get_all) }
