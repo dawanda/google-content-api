@@ -47,54 +47,50 @@ module GoogleContentApi
                   xml['scp'].price_ attributes[:price], :unit => attributes[:currency]
 
                   # optional values
-                  add_optional_values(xml, attributes)
+                 if attributes[:additional_images]
+                   attributes[:additional_images].each { |image_link| xml['sc'].additional_image_link_ }
+                 end
+                 if attributes[:product_type]
+                   xml['scp'].product_type_ attributes[:product_type]
+                 end
+                 if attributes[:google_product_category]
+                   xml['scp'].google_product_category_ attributes[:google_product_category]
+                 end
+                 if attributes[:brand]
+                   xml['scp'].brand_ attributes[:brand]
+                 end
+                 if attributes[:mpn]
+                   xml['scp'].mpn_ attributes[:mpn]
+                 end
+                 if attributes[:adwords_grouping]
+                   xml['scp'].adwords_grouping_ attributes[:adwords_grouping]
+                 end
+                 if attributes[:adwords_labels]
+                   xml['scp'].adwords_labels_ attributes[:adwords_labels]
+                 end
+                 if attributes[:adwords_redirect]
+                   xml['scp'].adwords_redirect_ attributes[:adwords_redirect]
+                 end
+                 if attributes[:shipping]
+                   xml['scp'].shipping_ do
+                     xml['scp'].shipping_country_ attributes[:shipping_country]
+                     xml['scp'].shipping_price_ attributes[:shipping_price]
+                     xml['scp'].shipping_service_ attributes[:shipping_service]
+                   end
+                 end
+                 if attributes[:size]
+                   xml['scp'].size_ attributes[:size]
+                 end
+                 if attributes[:gender]
+                   xml['scp'].gender_ attributes[:gender]
+                 end
+                 if attributes[:age_group]
+                   xml['scp'].age_group_ attributes[:age_group]
+                 end
                 end
               end
             end
           end.to_xml
-        end
-
-        def add_optional_values(xml, attributes)
-          if attributes[:additional_images]
-            attributes[:additional_images].each { |image_link| xml['sc'].additional_image_link_ }
-          end
-          if attributes[:product_type]
-            xml['scp'].product_type_ attributes[:product_type]
-          end
-          if attributes[:google_product_category]
-            xml['scp'].google_product_category_ attributes[:google_product_category]
-          end
-          if attributes[:brand]
-            xml['scp'].brand_ attributes[:brand]
-          end
-          if attributes[:mpn]
-            xml['scp'].mpn_ attributes[:mpn]
-          end
-          if attributes[:adwords_grouping]
-            xml['scp'].adwords_grouping_ attributes[:adwords_grouping]
-          end
-          if attributes[:adwords_labels]
-            xml['scp'].adwords_labels_ attributes[:adwords_labels]
-          end
-          if attributes[:adwords_redirect]
-            xml['scp'].adwords_redirect_ attributes[:adwords_redirect]
-          end
-          if attributes[:shipping]
-            xml['scp'].shipping_ do
-              xml['scp'].shipping_country_ attributes[:shipping_country]
-              xml['scp'].shipping_price_ attributes[:shipping_price]
-              xml['scp'].shipping_service_ attributes[:shipping_service]
-            end
-          end
-          if attributes[:size]
-            xml['scp'].size_ attributes[:size]
-          end
-          if attributes[:gender]
-            xml['scp'].gender_ attributes[:gender]
-          end
-          if attributes[:age_group]
-            xml['scp'].age_group_ attributes[:age_group]
-          end
         end
     end
   end
