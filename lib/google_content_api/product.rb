@@ -82,7 +82,7 @@ module GoogleContentApi
           if attributes[:shipping]
             xml['scp'].shipping_ do
               xml['scp'].shipping_country_ attributes[:shipping][:shipping_country]
-              xml['scp'].shipping_price_ attributes[:shipping][:shipping_price]
+              xml['scp'].shipping_price_ attributes[:shipping][:shipping_price], :unit => attributes[:currency]
               xml['scp'].shipping_service_ attributes[:shipping][:shipping_service]
             end
           end
