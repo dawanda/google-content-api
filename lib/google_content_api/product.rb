@@ -25,9 +25,6 @@ module GoogleContentApi
 
       private
         def create_product_items_batch_xml(items)
-          mandatory_values = [:id, :title, :description, :link, :image, :content_language, :target_country, :channel]
-          # 120.days.from_now.strftime("%Y-%m-%d")
-
           Nokogiri::XML::Builder.new do |xml|
             xml.feed('xmlns' => 'http://www.w3.org/2005/Atom', 'xmlns:batch' => 'http://schemas.google.com/gdata/batch') do
               items.each do |attributes|
@@ -40,8 +37,6 @@ module GoogleContentApi
                   xml['sc'].image_link_ attributes[:image]
                   xml['sc'].content_language_ attributes[:content_language]
                   xml['sc'].target_country_   attributes[:target_country]
-                  xml['sc'].expiration_date_  attributes[:expiration_date] if attributes[:expiration_date]
-                  xml['sc'].adult_ attributes[:adult] if attributes[:adult]
                   xml['scp'].availability_ attributes[:availability]
                   xml['scp'].condition_(attributes[:condition] != 9 ? "new" : "used")
                   xml['scp'].price_ attributes[:price], :unit => attributes[:currency]
@@ -55,6 +50,12 @@ module GoogleContentApi
         end
 
         def add_optional_values(xml, attributes)
+          if attributes[:expiration_date]
+            xml['sc'].expiration_date_  attributes[:expiration_date]
+          end
+          if attributes[:adult]
+            xml['sc'].adult_ attributes[:adult]
+          end
           if attributes[:additional_images]
             attributes[:additional_images].each { |image_link| xml['sc'].additional_image_link_ }
           end
