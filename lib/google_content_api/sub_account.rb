@@ -21,7 +21,7 @@ module GoogleContentApi
       end
 
       def create(title, adult_content = false, attributes = {})
-        token            = fetch_token
+        token            = Authorization.fetch_token
         sub_accounts_url = GoogleContentApi.urls("managed_accounts", google_user_id)
         xml              = create_xml(title, adult_content, attributes)
         Faraday.headers  = {
@@ -40,7 +40,7 @@ module GoogleContentApi
       end
 
       def delete(id)
-        token            = fetch_token
+        token            = Authorization.fetch_token
         sub_account_url  = GoogleContentApi.urls("managed_accounts", google_user_id) + "/#{id}"
         Faraday.headers  = { "Authorization"  => "AuthSub token=#{token}" }
         response         = Faraday.delete sub_account_url
