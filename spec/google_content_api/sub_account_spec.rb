@@ -12,7 +12,7 @@ describe GoogleContentApi::SubAccount do
       it "creates a sub account" do
         subject.should_receive(:create_xml).
           once.with(sub_account_name, false, {}).and_return(example_create_xml)
-        subject.should_receive(:fetch_token).once.and_return(fake_token)
+        GoogleContentApi::Authorization.should_receive(:fetch_token).once.and_return(fake_token)
 
         stub_request(:post, GoogleContentApi.urls("managed_accounts", user_id)).
           with(
@@ -75,7 +75,7 @@ describe GoogleContentApi::SubAccount do
 
       context "when status == 200" do
         it "returns the response" do
-          subject.should_receive(:fetch_token).once.and_return(fake_token)
+          GoogleContentApi::Authorization.should_receive(:fetch_token).once.and_return(fake_token)
           Faraday.should_receive(:delete).
             with(delete_url).
             and_return( double("response", :status => 200) )
@@ -90,7 +90,7 @@ describe GoogleContentApi::SubAccount do
 
 
         it "raises error" do
-          subject.should_receive(:fetch_token).once.and_return(fake_token)
+          GoogleContentApi::Authorization.should_receive(:fetch_token).once.and_return(fake_token)
           Faraday.should_receive(:delete).
             with(delete_url).
             and_return( double("response",
