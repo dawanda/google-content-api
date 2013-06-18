@@ -4,7 +4,7 @@ module GoogleContentApi
     class << self
 
       def fetch_token
-        @@client = Google::APIClient.new(
+        @@client ||= Google::APIClient.new(
           :application_name    => GoogleContentApi.config["application_name"],
           :application_version => GoogleContentApi.config["application_version"]
         )

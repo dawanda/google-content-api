@@ -20,4 +20,12 @@ describe GoogleContentApi::Authorization do
       end
     end
   end
+
+  describe ".fetch_token" do
+    it "always returns a token" do
+      Signet::OAuth2::Client.any_instance.stub(:fetch_access_token!)
+      Signet::OAuth2::Client.any_instance.stub(:access_token).and_return(fake_token)
+      2.times { subject.fetch_token.should == fake_token }
+    end
+  end
 end
