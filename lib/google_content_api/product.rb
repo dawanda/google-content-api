@@ -40,7 +40,6 @@ module GoogleContentApi
                   xml['scp'].availability_ attributes[:availability]
                   xml['scp'].condition_(attributes[:condition] != 9 ? "new" : "used")
                   xml['scp'].price_ attributes[:price], :unit => attributes[:currency]
-
                   # optional values
                   add_optional_values(xml, attributes)
                 end
@@ -95,6 +94,9 @@ module GoogleContentApi
           end
           if attributes[:age_group]
             xml['scp'].age_group_ attributes[:age_group]
+          end
+          if attributes[:identifier_exists]
+            xml['scp'].identifier_exists_ attributes[:identifier_exists]
           end
         end
     end
