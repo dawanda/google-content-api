@@ -95,7 +95,7 @@ module GoogleContentApi
           if attributes[:age_group]
             xml['scp'].age_group_ attributes[:age_group]
           end
-          if attributes[:identifier_exists]
+          if attributes.has_key?(:identifier_exists)
             xml['scp'].identifier_exists_ attributes[:identifier_exists]
           end
         end
