@@ -21,21 +21,14 @@ module GoogleContentApi
       end
 
       def create(title, adult_content = false, attributes = {})
-        token            = Authorization.fetch_token
-        sub_accounts_url = GoogleContentApi.urls("managed_accounts", google_user_id)
-        xml              = create_xml(title, adult_content, attributes)
-        Faraday.headers  = {
-          "Content-Type"   => "application/atom+xml",
-          "Content-Length" => xml.length.to_s,
-          "Authorization"  => "AuthSub token=#{token}"
-        }
+        prepare_request_params(title, adult_content, attributes) do |url, xml|
+          Faraday.post url, xml
+        end
+      end
 
-        response = Faraday.post sub_accounts_url, xml
-
-        if response.status == 201
-          response
-        else
-          raise "Unable to create sub account - received status #{response.status}. body: #{response.body}"
+      def update(title, google_id, adult_content = false, attributes = {})
+        prepare_request_params(title, adult_content, attributes) do |url, xml|
+          Faraday.put "#{url}/#{google_id}", xml
         end
       end
 
@@ -48,11 +41,34 @@ module GoogleContentApi
         if response.status == 200
           response
         else
-          raise "Unable to create sub account - received status #{response.status}. body: #{response.body}"
+          raise "Unable to delete sub account - received status #{response.status}. body: #{response.body}"
         end
       end
 
       private
+        def prepare_request_params(title, adult_content = false, attributes = {})
+          token            = Authorization.fetch_token
+          sub_accounts_url = GoogleContentApi.urls("managed_accounts", google_user_id)
+          xml              = create_xml(title, adult_content, attributes)
+          Faraday.headers  = set_headers(token, xml.length)
+
+          response = yield sub_accounts_url, xml
+
+          if response.status == 201
+            response
+          else
+            raise "Unable to create sub account - received status #{response.status}. body: #{response.body}"
+          end
+        end
+
+        def set_headers(token, length = 0)
+          {
+            "Content-Type"   => "application/atom+xml",
+            "Content-Length" => length.to_s,
+            "Authorization"  => "AuthSub token=#{token}"
+          }
+        end
+
         def create_xml(title, adult_content = false, attributes = {})
           adult_content = !adult_content ? "no" : "yes"
           builder = Nokogiri::XML::Builder.new do |xml|

@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 describe GoogleContentApi::SubAccount do
     subject { GoogleContentApi::SubAccount }
     let(:user_id) { GoogleContentApi.config["user_id"] }
@@ -27,6 +29,31 @@ describe GoogleContentApi::SubAccount do
                 :body => "<entry xmlns='...'>stuff</entry>")
 
         response = subject.create(sub_account_name, false)
+        response.status.should == 201
+      end
+    end
+
+    describe ".update" do
+      let(:existing_google_id) { "123456" }
+      it "updates a sub account" do
+        subject.should_receive(:create_xml).
+          once.with(sub_account_name, false, {}).and_return(example_create_xml)
+        GoogleContentApi::Authorization.should_receive(:fetch_token).once.and_return(fake_token)
+
+        url = GoogleContentApi.urls("managed_accounts", user_id)
+        stub_request(:put, "#{url}/#{existing_google_id}").
+          with(
+            :body => example_create_xml,
+            :headers => {
+              'Accept'=>'*/*',
+              'Authorization' => "AuthSub token=#{fake_token}",
+              'Content-Length' => example_create_xml.length.to_s,
+              'Content-Type' => 'application/atom+xml'
+              }).to_return(
+                :status => 201,
+                :body => "<entry xmlns='...'>stuff</entry>")
+
+        response = subject.update(sub_account_name, existing_google_id, false)
         response.status.should == 201
       end
     end
@@ -69,7 +96,7 @@ describe GoogleContentApi::SubAccount do
       end
     end
 
-    describe ".delete_sub_account" do
+    describe ".delete" do
       let(:sub_account_id) { "555555" }
       let(:delete_url) { GoogleContentApi.urls("managed_accounts", user_id) + "/#{sub_account_id}" }
 
@@ -87,7 +114,6 @@ describe GoogleContentApi::SubAccount do
 
       context "when status != 200" do
         let(:example_delete_error_xml) { %Q|<?xml version='1.0' encoding='UTF-8'?><errors xmlns='http://schemas.google.com/g/2005'><error><domain>GData</domain><code>ResourceNotFoundException</code><internalReason>Managed account 15794381 not found</internalReason></error></errors>| }
-
 
         it "raises error" do
           GoogleContentApi::Authorization.should_receive(:fetch_token).once.and_return(fake_token)
