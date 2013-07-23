@@ -21,22 +21,32 @@ module GoogleContentApi
       end
 
       def create(title, adult_content = false, attributes = {})
-        prepare_request_params(title, adult_content, attributes) do |url, xml|
-          Faraday.post url, xml
+        prepare_request_params(title, adult_content, attributes)
+        response = Faraday.post @sub_accounts_url, @xml
+
+        if response.status == 201
+          response
+        else
+          raise "Unable to create sub account - received status #{response.status}. body: #{response.body}"
         end
       end
 
       def update(title, google_id, adult_content = false, attributes = {})
-        prepare_request_params(title, adult_content, attributes) do |url, xml|
-          Faraday.put "#{url}/#{google_id}", xml
+        prepare_request_params(title, adult_content, attributes)
+        response = Faraday.put "#{@sub_accounts_url}/#{google_id}", @xml
+
+        if response.status == 200
+          response
+        else
+          raise "Unable to update sub account - received status #{response.status}. body: #{response.body}"
         end
       end
 
-      def delete(id)
-        token            = Authorization.fetch_token
-        sub_account_url  = GoogleContentApi.urls("managed_accounts", google_user_id) + "/#{id}"
-        Faraday.headers  = { "Authorization"  => "AuthSub token=#{token}" }
-        response         = Faraday.delete sub_account_url
+      def delete(google_id)
+        token           = Authorization.fetch_token
+        sub_account_url = GoogleContentApi.urls("managed_accounts", google_user_id)
+        Faraday.headers = { "Authorization"  => "AuthSub token=#{token}" }
+        response        = Faraday.delete "#{sub_account_url}/#{google_id}"
 
         if response.status == 200
           response
@@ -47,18 +57,10 @@ module GoogleContentApi
 
       private
         def prepare_request_params(title, adult_content = false, attributes = {})
-          token            = Authorization.fetch_token
-          sub_accounts_url = GoogleContentApi.urls("managed_accounts", google_user_id)
-          xml              = create_xml(title, adult_content, attributes)
-          Faraday.headers  = set_headers(token, xml.length)
-
-          response = yield sub_accounts_url, xml
-
-          if response.status == 201
-            response
-          else
-            raise "Unable to create sub account - received status #{response.status}. body: #{response.body}"
-          end
+          @token            = Authorization.fetch_token
+          @sub_accounts_url = GoogleContentApi.urls("managed_accounts", google_user_id)
+          @xml              = create_xml(title, adult_content, attributes)
+          Faraday.headers  = set_headers(@token, @xml.length)
         end
 
         def set_headers(token, length = 0)

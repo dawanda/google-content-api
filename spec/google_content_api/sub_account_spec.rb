@@ -50,11 +50,11 @@ describe GoogleContentApi::SubAccount do
               'Content-Length' => example_create_xml.length.to_s,
               'Content-Type' => 'application/atom+xml'
               }).to_return(
-                :status => 201,
+                :status => 200,
                 :body => "<entry xmlns='...'>stuff</entry>")
 
         response = subject.update(sub_account_name, existing_google_id, false)
-        response.status.should == 201
+        response.status.should == 200
       end
     end
 
