@@ -5,7 +5,7 @@ module GoogleContentApi
 
       def create_products(sub_account_id, products, dry_run = false)
         token            = Authorization.fetch_token
-        products_url     = GoogleContentApi.urls("products", sub_account_id, dry_run)
+        products_url     = GoogleContentApi.urls("products", sub_account_id, :dry_run => dry_run)
         xml              = create_product_items_batch_xml(products)
         Faraday.headers  = {
           "Content-Type"   => "application/atom+xml",
@@ -22,30 +22,71 @@ module GoogleContentApi
       end
       alias_method :create_items, :create_products
 
+      def delete(sub_account_id, params)
+        token           = Authorization.fetch_token
+        product_url     = GoogleContentApi.urls("product", sub_account_id, :language => params[:language], :country => params[:country], :item_id => params[:item_id], :dry_run => params[:dry_run])
+        Faraday.headers = { "Authorization" => "AuthSub token=#{token}" }
+
+        response = Faraday.delete product_url
+
+        if response.status == 200
+          response
+        else
+          raise "Unable to delete product - received status #{response.status}. body: #{response.body}"
+        end
+      end
+
+      def create
+        raise "not implemented"
+      end
+
+      def update
+        raise "not implemented"
+      end
 
       private
+        def create_item_xml(item)
+          item[:id] = item_url(item[:id])
+
+          Nokogiri::XML::Builder.new do |xml|
+            xml.entry(
+                'xmlns'     => 'http://www.w3.org/2005/Atom',
+                'xmlns:app' => 'http://www.w3.org/2007/app',
+                'xmlns:sc'  => 'http://schemas.google.com/structuredcontent/2009',
+                'xmlns:scp' => 'http://schemas.google.com/structuredcontent/2009/products',
+                'xmlns:gd'  => 'http://schemas.google.com/g/2005') do
+              add_mandatory_values(xml, item)
+              add_optional_values(xml, item)
+            end
+          end.to_xml
+        end
+
         def create_product_items_batch_xml(items)
           Nokogiri::XML::Builder.new do |xml|
             xml.feed('xmlns' => 'http://www.w3.org/2005/Atom', 'xmlns:batch' => 'http://schemas.google.com/gdata/batch') do
               items.each do |attributes|
                 xml.entry('xmlns' => 'http://www.w3.org/2005/Atom', 'xmlns:sc' => 'http://schemas.google.com/structuredcontent/2009', 'xmlns:scp' => 'http://schemas.google.com/structuredcontent/2009/products', 'xmlns:app' => 'http://www.w3.org/2007/app') do
                   xml['batch'].operation_(:type => 'INSERT')
-                  xml['sc'].id_ attributes[:id]
-                  xml.title_ attributes[:title]
-                  xml.content_ attributes[:description], :type => 'text'
-                  xml.link_(:rel => 'alternate', :type => 'text/html', :href => attributes[:link])
-                  xml['sc'].image_link_ attributes[:image]
-                  xml['sc'].content_language_ attributes[:content_language]
-                  xml['sc'].target_country_   attributes[:target_country]
-                  xml['scp'].availability_ attributes[:availability]
-                  xml['scp'].condition_(attributes[:condition] != 9 ? "new" : "used")
-                  xml['scp'].price_ attributes[:price], :unit => attributes[:currency]
-                  # optional values
+                  add_mandatory_values(xml, attributes)
                   add_optional_values(xml, attributes)
                 end
               end
             end
           end.to_xml
+        end
+
+        def add_mandatory_values(xml, attributes)
+          xml['batch'].id_ attributes[:id]
+          xml['sc'].id_ attributes[:id]
+          xml.title_ attributes[:title]
+          xml.content_ attributes[:description], :type => 'text'
+          xml.link_(:rel => 'alternate', :type => 'text/html', :href => attributes[:link])
+          xml['sc'].image_link_ attributes[:image]
+          xml['sc'].content_language_ attributes[:content_language]
+          xml['sc'].target_country_   attributes[:target_country]
+          xml['scp'].availability_ attributes[:availability]
+          xml['scp'].condition_(attributes[:condition] != 9 ? "new" : "used")
+          xml['scp'].price_ attributes[:price], :unit => attributes[:currency]
         end
 
         def add_optional_values(xml, attributes)
