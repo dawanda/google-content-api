@@ -14,7 +14,7 @@ describe GoogleContentApi::Product do
       :title            => "Title",
       :description      => "desc",
       :link             => "http://testing.is/fun",
-      :image            => "http://testting.is/fun.jpg",
+      :image            => "http://testing.is/fun.jpg",
       :content_language => "en",
       :target_country   => "US",
       :currency         => "USD",
@@ -46,10 +46,14 @@ describe GoogleContentApi::Product do
 
   describe "private" do
     describe ".create_product_items_batch_xml" do
-      it "test xml creation"
-    end
+      it "creates an xml with all given product attributes" do
+        result_xml = subject.send(:create_product_items_batch_xml, [product_attributes])
 
-    describe ".create_product_items_batch_xml" do
+        result_xml.should match 'xmlns:batch="http://schemas.google.com/gdata/batch">'
+        result_xml.should match 'xmlns:scp="http://schemas.google.com/structuredcontent/2009/products"'
+        product_attributes.each { |attribute, value| result_xml.should match /#{value}/ }
+      end
+
       it "calls .add_optional_values" do
         GoogleContentApi::Authorization.stub(:fetch_token).and_return(fake_token)
         Faraday.stub(:post).and_return(successful_response)
