@@ -139,11 +139,11 @@ module GoogleContentApi
           if attributes.has_key?(:identifier_exists)
             xml['scp'].identifier_exists_ attributes[:identifier_exists]
           end
-          if attributes[:unit_pricing_base_measure]
-            xml['scp'].unit_pricing_base_measure_ attributes[:unit_pricing_base_measure]
+          if attributes[:unit_pricing_base_measure] && attributes[:unit]
+            xml['scp'].unit_pricing_base_measure_ attributes[:unit_pricing_base_measure], :unit => attributes[:unit]
           end
-          if attributes[:unit_pricing_measure]
-            xml['scp'].unit_pricing_measure_ attributes[:unit_pricing_measure]
+          if attributes[:unit_pricing_measure] && attributes[:unit]
+            xml['scp'].unit_pricing_measure_ attributes[:unit_pricing_measure], :unit => attributes[:unit]
           end
         end
     end

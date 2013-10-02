@@ -62,5 +62,14 @@ describe GoogleContentApi::Product do
         subject.create_products(sub_account_id, [product_attributes], dry_run)
       end
     end
+
+    describe ".add_optional_values" do
+      let(:unit) { "g" }
+      let(:unit_pricing_measure) { 100 }
+      it "creates the xml with the given optional values" do
+        result_xml = subject.send(:create_product_items_batch_xml, [product_attributes.merge(:unit => unit, :unit_pricing_measure => unit_pricing_measure)])
+        result_xml.should match "<scp:unit_pricing_measure unit=\"#{unit}\">#{unit_pricing_measure}</scp:unit_pricing_measure>"
+      end
+    end
   end
 end
