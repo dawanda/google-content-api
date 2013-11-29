@@ -6,15 +6,17 @@ Gem for interacting with [Google's Content API for Shopping](https://developers.
 
 Add this line to your application's Gemfile:
 
-    gem 'google-content-api'
+    gem 'google-content-api', :require => "google_content_api"
 
-And then execute:
+And execute:
 
     $ bundle
 
 Or install it yourself as:
 
     $ gem install google-content-api
+
+And `require 'google_content_api'`
 
 ## Example Usage
 
