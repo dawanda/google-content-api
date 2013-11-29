@@ -1,12 +1,12 @@
-# GoogleContentApi
+# Google Content API
 
-Gem for interacting with Google's Shopping API.
+Gem for interacting with [Google's Content API for Shopping](https://developers.google.com/shopping-content/).
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'google_content_api'
+    gem 'google-content-api'
 
 And then execute:
 
@@ -14,7 +14,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install google_content_api
+    $ gem install google-content-api
 
 ## Example Usage
 
