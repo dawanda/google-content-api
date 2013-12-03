@@ -1,4 +1,4 @@
-# Google Content API
+# Google Content API [![Gem Version](https://badge.fury.io/rb/google-content-api.png)](http://badge.fury.io/rb/google-content-api)
 
 Gem for interacting with [Google's Content API for Shopping](https://developers.google.com/shopping-content/).
 
