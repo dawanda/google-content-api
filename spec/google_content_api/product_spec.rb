@@ -49,7 +49,7 @@ describe GoogleContentApi::Product do
       it "creates an xml with all given product attributes" do
         result_xml = subject.send(:create_product_items_batch_xml, [product_attributes])
 
-        result_xml.should match 'xmlns:batch="http://schemas.google.com/gdata/batch">'
+        result_xml.should match 'xmlns:batch="http://schemas.google.com/gdata/batch"'
         result_xml.should match 'xmlns:scp="http://schemas.google.com/structuredcontent/2009/products"'
         product_attributes.each { |attribute, value| result_xml.should match /#{value}/ }
       end
