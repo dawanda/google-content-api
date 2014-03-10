@@ -18,7 +18,7 @@ module GoogleContentApi
           when "managed_accounts"
             "#{base_url}/managedaccounts"
           when "products"
-            "#{base_url}/items/products/schema/batch?warnings"
+            "#{base_url}/items/products/schema/batch?warnings="
           when "item", "product"
             raise "must supply language, country and item id" \
               if options[:language].nil? || options[:country].nil? || options[:item_id].nil?
@@ -28,6 +28,6 @@ module GoogleContentApi
             raise "unknown zone"
           end
 
-    options[:dry_run] ? url + "&dry-run" : url
+    options[:dry_run] ? url + "&dry-run=" : url
   end
 end
