@@ -28,9 +28,9 @@ describe GoogleContentApi::Product do
       GoogleContentApi::Authorization.should_receive(:fetch_token).once.and_return(fake_token)
       stub_request(:post, GoogleContentApi.urls("products", sub_account_id, :dry_run => dry_run)).
         with(:headers => {
-          'Content-Type'  => 'application/atom+xml',
-          'Authorization' => "AuthSub token=#{fake_token}"
-        }).to_return(:status => 200)
+        'Content-Type'  => 'application/atom+xml',
+        'Authorization' => "AuthSub token=#{fake_token}"
+      }).to_return(:status => 200)
 
       subject.create_products(sub_account_id, [], dry_run).status.should == 200
     end
@@ -44,6 +44,20 @@ describe GoogleContentApi::Product do
     end
   end
 
+
+  describe ".update" do
+    it "status == 200" do
+      GoogleContentApi::Authorization.should_receive(:fetch_token).once.and_return(fake_token)
+      stub_request(:post, GoogleContentApi.urls("products", sub_account_id, :dry_run => dry_run)).
+        with(:headers => {
+        'Content-Type'  => 'application/atom+xml',
+        'Authorization' => "AuthSub token=#{fake_token}"
+      }).to_return(:status => 200)
+
+      subject.update_products(sub_account_id, [], dry_run).status.should == 200
+    end
+  end
+
   describe "private" do
     describe ".create_product_items_batch_xml" do
       it "creates an xml with all given product attributes" do
@@ -51,6 +65,7 @@ describe GoogleContentApi::Product do
 
         result_xml.should match 'xmlns:batch="http://schemas.google.com/gdata/batch"'
         result_xml.should match 'xmlns:scp="http://schemas.google.com/structuredcontent/2009/products"'
+        result_xml.should match 'batch:operation type="INSERT"'
         product_attributes.each { |attribute, value| result_xml.should match /#{value}/ }
       end
 
@@ -60,6 +75,14 @@ describe GoogleContentApi::Product do
 
         subject.should_receive(:add_optional_values).once
         subject.create_products(sub_account_id, [product_attributes], dry_run)
+      end
+    end
+
+    describe ".update_product_items_batch_xml" do
+      it "creates an xml with all given product attributes" do
+        result_xml = subject.send(:update_product_items_batch_xml, [product_attributes])
+        result_xml.should match 'batch:operation type="UPDATE"'
+        product_attributes.each{ |attribute, value| result_xml.should match /#{value}/ }
       end
     end
 

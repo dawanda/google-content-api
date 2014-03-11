@@ -22,6 +22,24 @@ module GoogleContentApi
       end
       alias_method :create_items, :create_products
 
+      def update_products(sub_account_id, products, dry_run = false)
+        token            = Authorization.fetch_token
+        products_url     = GoogleContentApi.urls("products", sub_account_id, :dry_run => dry_run)
+        xml              = update_product_items_batch_xml(products)
+        Faraday.headers  = {
+          "Content-Type"   => "application/atom+xml",
+          "Authorization"  => "AuthSub token=#{token}"
+        }
+
+        response = Faraday.post products_url, xml
+
+        if response.status == 200
+          response
+        else
+          raise "Unable to batch insert products - received status #{response.status}. body: #{response.body}"
+        end
+      end
+
       def delete(sub_account_id, params)
         token           = Authorization.fetch_token
         product_url     = GoogleContentApi.urls("product", sub_account_id, :language => params[:language], :country => params[:country], :item_id => params[:item_id], :dry_run => params[:dry_run])
@@ -62,25 +80,34 @@ module GoogleContentApi
         end
 
         def create_product_items_batch_xml(items)
+          generalized_product_items_batch_xml(items, :type => 'INSERT')
+        end
+
+        def update_product_items_batch_xml(items)
+          generalized_product_items_batch_xml(items, :type => 'UPDATE')
+        end
+
+        def generalized_product_items_batch_xml(items, opts)
           Nokogiri::XML::Builder.new do |xml|
             xml.feed('xmlns' => 'http://www.w3.org/2005/Atom', 'xmlns:batch' => 'http://schemas.google.com/gdata/batch') do
               items.each do |attributes|
                 xml.entry('xmlns' => 'http://www.w3.org/2005/Atom', 'xmlns:sc' => 'http://schemas.google.com/structuredcontent/2009', 'xmlns:scp' => 'http://schemas.google.com/structuredcontent/2009/products', 'xmlns:app' => 'http://www.w3.org/2007/app') do
-                  xml['batch'].operation_(:type => 'INSERT')
-                  add_mandatory_values(xml, attributes)
-                  add_optional_values(xml, attributes)
+                  xml['batch'].operation_(:type => opts[:type])
+                  add_mandatory_values(xml, attributes, opts)
+                  add_optional_values(xml, attributes, opts)
                 end
               end
             end
           end.to_xml
         end
 
-        def add_mandatory_values(xml, attributes)
+        def add_mandatory_values(xml, attributes, opts)
           xml['batch'].id_ attributes[:id]
           xml['sc'].id_ attributes[:id]
           xml.title_ attributes[:title]
           xml.content_ attributes[:description], :type => 'text'
-          xml.link_(:rel => 'alternate', :type => 'text/html', :href => attributes[:link])
+          link_rel = opts[:type] == 'UPDATE' ? 'edit' : 'alternate'
+          xml.link_(:rel => link_rel, :type => 'text/html', :href => attributes[:link])
           xml['sc'].image_link_ attributes[:image]
           xml['sc'].content_language_ attributes[:content_language]
           xml['sc'].target_country_   attributes[:target_country]
@@ -89,7 +116,7 @@ module GoogleContentApi
           xml['scp'].price_ attributes[:price], :unit => attributes[:currency]
         end
 
-        def add_optional_values(xml, attributes)
+        def add_optional_values(xml, attributes, opts)
           if attributes[:expiration_date]
             xml['sc'].expiration_date_  attributes[:expiration_date]
           end
