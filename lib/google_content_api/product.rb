@@ -106,8 +106,11 @@ module GoogleContentApi
           xml['sc'].id_ attributes[:id]
           xml.title_ attributes[:title]
           xml.content_ attributes[:description], :type => 'text'
-          link_rel = opts[:type] == 'UPDATE' ? 'edit' : 'alternate'
-          xml.link_(:rel => link_rel, :type => 'text/html', :href => attributes[:link])
+          if  opts[:type] == 'UPDATE'
+            xml.link_(:rel => 'edit', :type => 'application/atom+xml', :href => attributes[:link])
+          else
+            xml.link_(:rel => 'alternate', :type => 'text/html', :href => attributes[:link])
+          end
           xml['sc'].image_link_ attributes[:image]
           xml['sc'].content_language_ attributes[:content_language]
           xml['sc'].target_country_   attributes[:target_country]

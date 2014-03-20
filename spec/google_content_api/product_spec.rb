@@ -82,7 +82,9 @@ describe GoogleContentApi::Product do
       it "creates an xml with all given product attributes" do
         result_xml = subject.send(:update_product_items_batch_xml, [product_attributes])
         result_xml.should match 'batch:operation type="UPDATE"'
-        product_attributes.each{ |attribute, value| result_xml.should match /#{value}/ }
+        result_xml.should match 'link.*rel="edit"'
+        result_xml.should match 'link.*application/atom\+xml'
+        product_attributes.each{ |attribute,value| result_xml.should match /#{value}/ }
       end
     end
 
