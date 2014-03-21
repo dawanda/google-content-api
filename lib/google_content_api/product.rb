@@ -25,6 +25,7 @@ module GoogleContentApi
       def update_products(sub_account_id, products, dry_run = false)
         token            = Authorization.fetch_token
         products_url     = GoogleContentApi.urls("products", sub_account_id, :dry_run => dry_run)
+        @sub_account_id  = sub_account_id
         xml              = update_product_items_batch_xml(products)
         Faraday.headers  = {
           "Content-Type"   => "application/atom+xml",
@@ -66,7 +67,7 @@ module GoogleContentApi
         def create_item_xml(item)
           item[:id] = item_url(item[:id])
 
-          Nokogiri::XML::Builder.new do |xml|
+          NokogiriwXML::Builder.new do |xml|
             xml.entry(
                 'xmlns'     => 'http://www.w3.org/2005/Atom',
                 'xmlns:app' => 'http://www.w3.org/2007/app',
@@ -101,16 +102,16 @@ module GoogleContentApi
           end.to_xml
         end
 
-        def add_mandatory_values(xml, attributes, opts)
-          xml['batch'].id_ attributes[:id]
+        def add_mandatory_values(xml, attributes, opts = {})
+          if  opts[:type] == 'UPDATE'
+            xml.id_ GoogleContentApi.urls("item_to_update", @sub_account_id, :language => attributes[:content_language], :country => attributes[:target_country], :item_id => attributes[:id])
+          else
+            xml['batch'].id_ attributes[:id]
+          end
           xml['sc'].id_ attributes[:id]
           xml.title_ attributes[:title]
           xml.content_ attributes[:description], :type => 'text'
-          if  opts[:type] == 'UPDATE'
-            xml.link_(:rel => 'edit', :type => 'application/atom+xml', :href => attributes[:link])
-          else
-            xml.link_(:rel => 'alternate', :type => 'text/html', :href => attributes[:link])
-          end
+          xml.link_(:rel => 'alternate', :type => 'text/html', :href => attributes[:link])
           xml['sc'].image_link_ attributes[:image]
           xml['sc'].content_language_ attributes[:content_language]
           xml['sc'].target_country_   attributes[:target_country]
@@ -119,7 +120,7 @@ module GoogleContentApi
           xml['scp'].price_ attributes[:price], :unit => attributes[:currency]
         end
 
-        def add_optional_values(xml, attributes, opts)
+        def add_optional_values(xml, attributes, opts = {})
           if attributes[:expiration_date]
             xml['sc'].expiration_date_  attributes[:expiration_date]
           end

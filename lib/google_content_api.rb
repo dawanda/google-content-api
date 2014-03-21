@@ -24,6 +24,8 @@ module GoogleContentApi
               if options[:language].nil? || options[:country].nil? || options[:item_id].nil?
 
             "#{base_url}/items/products/generic/online:#{options[:language].downcase}:#{options[:country].upcase}:#{options[:item_id]}?warnings"
+          when "item_to_update"
+             "#{base_url}/items/products/schema/online:#{options[:language].downcase}:#{options[:country].upcase}:#{options[:item_id]}"
           else
             raise "unknown zone"
           end
