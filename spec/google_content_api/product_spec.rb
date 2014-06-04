@@ -95,6 +95,12 @@ describe GoogleContentApi::Product do
         result_xml = subject.send(:create_product_items_batch_xml, [product_attributes.merge(:unit => unit, :unit_pricing_measure => unit_pricing_measure)])
         result_xml.should match "<scp:unit_pricing_measure unit=\"#{unit}\">#{unit_pricing_measure}</scp:unit_pricing_measure>"
       end
+
+      it "creates custom labels" do
+        result_xml = subject.send(:create_product_items_batch_xml, [product_attributes.merge(:custom_label_0 => "bla", :custom_label_1 => "foo")])
+        result_xml.should match "<scp:custom_label_0>bla</scp:custom_label_0>"
+        result_xml.should match "<scp:custom_label_1>foo</scp:custom_label_1>"
+      end
     end
   end
 end

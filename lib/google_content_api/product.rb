@@ -176,6 +176,11 @@ module GoogleContentApi
           if attributes[:unit_pricing_measure] && attributes[:unit]
             xml['scp'].unit_pricing_measure_ attributes[:unit_pricing_measure], :unit => attributes[:unit]
           end
+          (0..4).each do |i|
+            if attributes["custom_label_#{i}".to_sym]
+              xml['scp'].send "custom_label_#{i}_".to_sym, attributes["custom_label_#{i}".to_sym]
+            end
+          end
         end
     end
   end
