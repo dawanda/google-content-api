@@ -176,6 +176,14 @@ module GoogleContentApi
           if attributes[:unit_pricing_measure] && attributes[:unit]
             xml['scp'].unit_pricing_measure_ attributes[:unit_pricing_measure], :unit => attributes[:unit]
           end
+          if attributes[:sale_price]
+            xml['scp'].sale_price_ attributes[:sale_price], :unit => attributes[:currency]
+          end
+          if attributes[:sale_price_effective_date]
+            range = attributes[:sale_price_effective_date]
+            format = "%Y-%m-%dT%H:%M:%SZ"
+            xml['scp'].sale_price_effective_date range.begin.utc.strftime(format) + "/" + range.end.utc.strftime(format)
+          end
           (0..4).each do |i|
             if attributes["custom_label_#{i}".to_sym]
               xml['scp'].send "custom_label_#{i}_".to_sym, attributes["custom_label_#{i}".to_sym]

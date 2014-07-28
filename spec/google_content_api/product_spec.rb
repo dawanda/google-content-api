@@ -101,6 +101,16 @@ describe GoogleContentApi::Product do
         result_xml.should match "<scp:custom_label_0>bla</scp:custom_label_0>"
         result_xml.should match "<scp:custom_label_1>foo</scp:custom_label_1>"
       end
+
+      it "adds sale price" do
+        result_xml = subject.send(:create_product_items_batch_xml, [product_attributes.merge(:sale_price => 1.23)])
+        result_xml.should match /<scp:sale_price unit="[A-Z]+">1.23<\/scp:sale_price>/
+      end
+
+      it "adds sale price effective date" do
+        result_xml = subject.send(:create_product_items_batch_xml, [product_attributes.merge(:sale_price_effective_date => (Time.utc(2014, 1, 1)..Time.utc(2014, 1, 2)))])
+        result_xml.should match "<scp:sale_price_effective_date>2014-01-01T00:00:00Z/2014-01-02T00:00:00Z</scp:sale_price_effective_date>"
+      end
     end
   end
 end
